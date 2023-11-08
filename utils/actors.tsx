@@ -1,4 +1,6 @@
-export const ACTORS = [
+import { Person } from '@/types';
+
+export const ACTORS: Person[] = [
   {
     adult: false,
     gender: 2,

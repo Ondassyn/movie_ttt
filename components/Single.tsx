@@ -1,79 +1,90 @@
 'use client';
 
 import { Person } from '@/types';
-import { ACTORS } from '@/utils/actors';
-import { OPTIONS } from '@/utils/fetchOptions';
 import React, { useEffect, useState } from 'react';
 import Board from './Board';
+import intersections from '@/utils/intersections.json';
+import { getRandom } from '@/utils/methods';
+
+const POPULARS_COUNT = 20;
+
+interface IntersectionData {
+  person_id: number;
+  intersections: Intersection[];
+}
+interface Intersection {
+  person_id: number;
+  common: number[];
+}
 
 const Single = () => {
-  const [data, setData] = useState<Person[]>([]);
+  const [verticals, setVerticals] = useState<number[]>([]);
+  const [horizontals, setHorizontals] = useState<number[]>([]);
 
   useEffect(() => {
-    const fetchMovies = async () => {
-      const jsons = await Promise.all(
-        ACTORS.slice(200, ACTORS.length).map(async (page) => {
-          const response = await fetch(
-            `${process.env.NEXT_PUBLIC_TMDB_URL}/person/${page?.id}/movie_credits`,
-            OPTIONS
-          );
-          const json = await response.json();
-          return {
-            person_id: page?.id,
-            movies: json?.cast.map((c: any) => ({
-              id: c?.id,
-              poster_path: c?.poster_path,
-              title: c?.title,
-              release_date: c?.release_date,
-            })),
-          };
-        })
-      );
+    if (!verticals?.length) {
+      const intersectionsData: IntersectionData[] = intersections;
 
-      // const response = await fetch(
-      //   `${process.env.NEXT_PUBLIC_TMDB_URL}/person/64/movie_credits`,
-      //   OPTIONS
-      // );
-      // const json = await response.json();
-      // console.log('json', json);
+      const populars = intersectionsData.slice(0, POPULARS_COUNT);
+      const randomHNumbers: number[] = [];
+      for (let i = 0; i < 3; i++) {
+        let rand: number = getRandom(POPULARS_COUNT - 1);
+        while (randomHNumbers.some((rn) => rn === rand)) {
+          rand = getRandom(POPULARS_COUNT - 1);
+        }
+        randomHNumbers.push(rand);
+      }
 
-      console.log('movies', jsons);
-    };
+      const possibleVerticals: number[] = [];
+      for (let i of populars[randomHNumbers[0]]?.intersections) {
+        if (
+          populars[randomHNumbers[1]]?.intersections?.some(
+            (ii) => ii?.person_id === i?.person_id
+          ) &&
+          populars[randomHNumbers[2]]?.intersections?.some(
+            (ii) => ii?.person_id === i?.person_id
+          )
+        ) {
+          possibleVerticals.push(i?.person_id);
+        }
+      }
+      console.log('possibleVerticals', possibleVerticals);
+      const topPossibleVerticals: IntersectionData[] = [];
 
-    fetchMovies();
+      for (let i of intersectionsData) {
+        if (possibleVerticals.some((pv) => pv === i?.person_id)) {
+          topPossibleVerticals.push(i);
+        }
+        if (topPossibleVerticals?.length === POPULARS_COUNT) {
+          break;
+        }
+      }
 
-    const fetchData = async () => {
-      const jsons = await Promise.all<Person[]>(
-        Array.from({ length: 100 }, (_, i) => i + 1).map(
-          async (page) => {
-            const response = await fetch(
-              `${process.env.NEXT_PUBLIC_TMDB_URL}/person/popular?page=${page}`,
-              OPTIONS
-            );
-            const json = await response.json();
-            return json?.results?.filter(
-              (res: Person) => res.known_for[0].vote_count > 5000
-            );
-          }
-        )
-      );
+      const randomVNumbers: number[] = [];
+      for (let i = 0; i < 3; i++) {
+        let rand: number = getRandom(POPULARS_COUNT - 1);
+        while (randomVNumbers.some((rn) => rn === rand)) {
+          rand = getRandom(POPULARS_COUNT - 1);
+        }
+        randomVNumbers.push(rand);
+      }
 
-      console.log('actors', jsons.flat(1));
-
-      // setData(
-      //   jsons
-      //     .flat(1)
-      //     .sort(() => 0.5 - Math.random())
-      //     .slice(0, 6)
-      // );
-    };
-
-    // fetchData().catch(console.error);
-  }, []);
+      setHorizontals([
+        populars[randomHNumbers[0]]?.person_id,
+        populars[randomHNumbers[1]]?.person_id,
+        populars[randomHNumbers[2]]?.person_id,
+      ]);
+      setVerticals([
+        topPossibleVerticals[randomVNumbers[0]]?.person_id,
+        topPossibleVerticals[randomVNumbers[1]]?.person_id,
+        topPossibleVerticals[randomVNumbers[2]]?.person_id,
+      ]);
+    }
+  }, [verticals]);
 
   return (
     <div className="h-screen w-full">
-      {/* <Board data={data} /> */}
+      <Board horizontals={horizontals} verticals={verticals} />
     </div>
   );
 };

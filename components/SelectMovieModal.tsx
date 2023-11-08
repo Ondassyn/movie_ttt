@@ -18,7 +18,7 @@ const SelectMovieModal = ({
 }: {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
-  names: string[];
+  names?: (string | undefined)[];
 }) => {
   const [selectedValue, setSelectedValue] = useState();
 
@@ -34,10 +34,10 @@ const SelectMovieModal = ({
             json.results.map((film: Movie) => {
               return {
                 value: film,
-                label: `${film.title} (${film.release_date.substring(
-                  0,
-                  4
-                )})`,
+                label: `${film.title} (${
+                  film?.release_date &&
+                  film.release_date.substring(0, 4)
+                })`,
               };
             })
           )
@@ -55,14 +55,19 @@ const SelectMovieModal = ({
         <div className="text-center whitespace-pre-line">
           Select a movie with{'\n'}
           <span className="font-bold text-lg">
-            {names[0]}
-          </span> and{' '}
-          <span className="font-bold text-lg">{names[1]}</span>
+            {names?.length && names[0]}
+          </span>{' '}
+          and{' '}
+          <span className="font-bold text-lg">
+            {names?.length && names[1]}
+          </span>
         </div>
         <AsyncSelect
           className="w-full"
           loadOptions={promiseOptions}
-          onChange={(e: any) => {}}
+          onChange={(e: any) => {
+            console.log('e', e);
+          }}
           placeholder="Start typing..."
           //   isDisabled={result}
           // theme={(theme) => ({

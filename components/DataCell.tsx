@@ -5,7 +5,7 @@ import { COLORS } from '@/utils/colors';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 
-const DataCell = ({ data }: { data: Person }) => {
+const DataCell = ({ data }: { data: Person | undefined }) => {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {

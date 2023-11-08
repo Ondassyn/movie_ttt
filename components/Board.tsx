@@ -1,71 +1,85 @@
 'use client';
 
 import { Person } from '@/types';
-import React, { useState } from 'react';
+import { ACTORS } from '@/utils/actors';
+import React, { useEffect, useState } from 'react';
 import BoardCell from './BoardCell';
 import DataCell from './DataCell';
 import SelectMovieModal from './SelectMovieModal';
 
-const Board = ({ data }: { data: Person[] }) => {
+const Board = ({
+  horizontals,
+  verticals,
+}: {
+  horizontals: number[];
+  verticals: number[];
+}) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [indexes, setIndexes] = useState([0, 0]);
+  useEffect(() => {
+    console.log('horizontals', horizontals);
+  }, []);
   return (
     <div className="w-full h-full grid grid-rows-4 grid-cols-4">
       <div></div>
-      {data.slice(0, 4).map((d) => (
-        <DataCell key={d?.id} data={d} />
+      {horizontals.map((h) => (
+        <DataCell key={h} data={ACTORS.find((a) => a?.id === h)} />
       ))}
+      <DataCell data={ACTORS.find((a) => a?.id === verticals[0])} />
       <BoardCell
-        indexes={[0, 3]}
+        indexes={[0, 0]}
         setOpen={setModalOpen}
         setIndexes={setIndexes}
       />
       <BoardCell
-        indexes={[1, 3]}
+        indexes={[1, 0]}
         setOpen={setModalOpen}
         setIndexes={setIndexes}
       />
       <BoardCell
-        indexes={[2, 3]}
+        indexes={[2, 0]}
         setOpen={setModalOpen}
         setIndexes={setIndexes}
       />
-      <DataCell data={data[4]} />
+      <DataCell data={ACTORS.find((a) => a?.id === verticals[1])} />
       <BoardCell
-        indexes={[0, 4]}
-        setOpen={setModalOpen}
-        setIndexes={setIndexes}
-      />
-      <BoardCell
-        indexes={[1, 4]}
+        indexes={[0, 1]}
         setOpen={setModalOpen}
         setIndexes={setIndexes}
       />
       <BoardCell
-        indexes={[2, 4]}
-        setOpen={setModalOpen}
-        setIndexes={setIndexes}
-      />
-      <DataCell data={data[5]} />
-      <BoardCell
-        indexes={[0, 5]}
+        indexes={[1, 1]}
         setOpen={setModalOpen}
         setIndexes={setIndexes}
       />
       <BoardCell
-        indexes={[1, 5]}
+        indexes={[2, 1]}
+        setOpen={setModalOpen}
+        setIndexes={setIndexes}
+      />
+      <DataCell data={ACTORS.find((a) => a?.id === verticals[2])} />
+      <BoardCell
+        indexes={[0, 2]}
         setOpen={setModalOpen}
         setIndexes={setIndexes}
       />
       <BoardCell
-        indexes={[2, 5]}
+        indexes={[1, 2]}
+        setOpen={setModalOpen}
+        setIndexes={setIndexes}
+      />
+      <BoardCell
+        indexes={[2, 2]}
         setOpen={setModalOpen}
         setIndexes={setIndexes}
       />
       <SelectMovieModal
         open={modalOpen}
         setOpen={setModalOpen}
-        names={[data[indexes[0]]?.name, data[indexes[1]]?.name]}
+        names={[
+          ACTORS.find((a) => a?.id === horizontals[indexes[0]])?.name,
+          ACTORS.find((a) => a?.id === verticals[indexes[1]])?.name,
+        ]}
       />
     </div>
   );
