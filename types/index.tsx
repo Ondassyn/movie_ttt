@@ -29,3 +29,12 @@ export type Movie = {
   origin_country?: string[];
   original_name?: string;
 };
+
+export type IntersectionData = {
+  person_id: number;
+  intersections: Intersection[];
+};
+export type Intersection = {
+  person_id: number;
+  common: number[];
+};

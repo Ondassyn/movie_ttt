@@ -13,7 +13,7 @@ const DataCell = ({ data }: { data: Person | undefined }) => {
   }, [data]);
 
   return (
-    <div className="flex flex-col items-center justify-center py-2">
+    <div className="w-full h-full flex flex-col items-center justify-center py-2">
       <div
         className={`relative w-1/2 h-full`}
         style={{
